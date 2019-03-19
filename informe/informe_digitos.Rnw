@@ -1,0 +1,51 @@
+\documentclass[11pt,twoside]{article}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+
+\begin{abstract}
+\noindent
+En este trabajo se aborada la construccion de modelos de clasificación multiclase usando el conjutno de datos MNIST  que es una gran base de datos de dígitos escritos a mano.
+las metodologias que se abordaran para contruir los modelos son las siguientes
+1. Regresión logística multinomial\\
+2. Árboles de clasificación\\
+3. Bosques aleatorios\\
+4. Máquinas de soporte vectorial\\
+5. Redes neuronales\\
+En este desarrollo se comprara el rendimiento de los modelos antes mensionados para verdificar cual es la mejor de estas metodologias con este conjutno de datos particular.  
+\end{abstract}
+
+
+\section{Definiciones}
+
+MINIST\\
+La base de datos MNIST (base de datos modificada del Instituto Nacional de Estándares y Tecnología ) es una gran base de datos de dígitos escritos a mano que se usa comúnmente para capacitar a varios sistemas de procesamiento de imágenes.La base de datos también se usa ampliamente para capacitación y pruebas en el campo del aprendizaje automático.
+
+Modelo Estadístico\\
+El modelado estadístico es una forma simplificada, matemáticamente formalizada, de aproximarse a la realidad, la que genera los datos) y, opcionalmente, hacer predicciones a partir de dicha aproximación.
+
+\section{Metodología}
+\subsection{Análisis descriptivo}
+<<>>=
+#trainingData <- read.csv("../data/mnist_train.csv",header = FALSE)
+#table(trainingData$V1)
+@
+
+\subsection{Regresión logística multinomial}
+
+
+
+
+
+
+
+\subsection{Diagnóstico del Modelo}
+\section{Conclusiones}
+\section{Referencias}
+\begin{description}
+\end{description}
+
+\end{document}

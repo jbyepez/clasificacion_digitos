@@ -60,7 +60,7 @@ history1 <- model1 %>%
 #validation_data = list(test, testLabels))
 plot(history)
 
-# Segundo modelo
+# Segundo modelo, tomado de: https://medium.com/coinmonks/handwritten-digit-prediction-using-convolutional-neural-networks-in-tensorflow-with-keras-and-live-5ebddf46dc8
 model2 <- keras_model_sequential() %>%
   layer_conv_2d(filters = 32, kernel_size = c(5,5), input_shape = c(28,28,1), activation = 'relu') %>%
   layer_max_pooling_2d(pool_size=c(2, 2)) %>%
@@ -71,9 +71,8 @@ model2 <- keras_model_sequential() %>%
   layer_dense(128, activation='relu') %>%
   layer_dense(10, activation='softmax') %>%
   compile(loss='categorical_crossentropy', optimizer='adam', metrics=c('accuracy'))
-# Modelo tomado de: https://medium.com/coinmonks/handwritten-digit-prediction-using-convolutional-neural-networks-in-tensorflow-with-keras-and-live-5ebddf46dc8
 
-# Entrenar modelo
+# Entrenar segundo modelo
 history2 <- model2 %>% 
   fit(trainingData2D,
       trainLabels,
@@ -90,37 +89,44 @@ save_model_hdf5(model2, "model2")
 model1 <- load_model_hdf5("model1")
 model2 <- load_model_hdf5("model2")
 
-# Evaluation & Prediction - train data
-model1 %>% evaluate(trainingData, trainLabels)
-predtrain <- model1 %>% predict_classes(trainingData)
-a <- table(Predicted = predtrain, Actual = trainY)
+#############################EVALUACION MODELO######################################
+evalModel <- function(model, dataSet, labelSet, Y){
+  # Evaluation & Prediction - train data
+  print(model %>% evaluate(dataSet, labelSet))
+  predtrain <- model %>% predict_classes(dataSet)
+  a <- table(Predicted = predtrain, Actual = Y)
+  print(a)
+  prob <- model %>% predict_proba(dataSet)
+  # print(cbind(prob, Predicted_class = predtrain, Actual = Y))
+  
+  # Conjunto de imagenes de entrenamiento mal predichas
+  badPredictions <- cbind(predicted = predtrain, correct = Y, pos = c(1:length(Y)))
+  badPredictions <- subset(badPredictions, badPredictions[,1] != badPredictions[,2])
+  return(badPredictions)
+}
 
-prob <- model1 %>% predict_proba(trainingData)
-cbind(prob, Predicted_class = predtrain, Actual = trainY)
-
-# Conjunto de imagenes de entrenamiento mal predichas
-badPredTrainData <- cbind(predicted = predtrain, correct = trainY, pos = c(1:60000))
-badPredTrainData <- subset(badPredTrainData, badPredTrainData[,1] != badPredTrainData[,2])
-
-# Evaluation & Prediction - test data
-model1 %>% evaluate(testingData, testLabels)
-predtest <- model1 %>% predict_classes(testingData)
-b <- table(Predicted = predtest, Actual = testY)
-
-prob <- model1 %>% predict_proba(testingData)
-cbind(prob, Predicted_class = predtest, Actual = testY)
-
-# Conjunto de imagenes de prueba mal predichas
-badPredTestData <- cbind(predicted = predtest, correct = testY, pos = c(1:10000))
-badPredTestData <- subset(badPredTestData, badPredTestData[,1] != badPredTestData[,2])
-
-#Funcion para ver uno de los digitos mal predichos
+# Funcion para ver uno de los digitos mal predichos
 library(magick)
-badpred <- function(predictions,dataset,pos){ #Funcion para ver el digito
-  plot(image_read(aperm(array(as.numeric(dataset[predictions[pos,3],]),c(28,28,1)),c(2,1,3)))) #Muestra la imagen en el viewer
+inspectBadPred <- function(predictions,dataset,pos){ #Funcion para ver el digito
+  plot(image_read(aperm(array(dataset[predictions[pos,3],],c(28,28,1)),c(2,1,3)))) #Muestra la imagen en el viewer
   print(paste("predicho:",predictions[pos,1]))
   print(paste("real:    ",predictions[pos,2]))
 }
 
-#Ejemplo de uso: Imagen mal predicha 4 de los datos de prueba
-badpred(badPredTestData,testingData,4)
+# Modelo 1 con datos de entrenamiento
+badPredTrain1 <- evalModel(model1,trainingData,trainLabels,trainY)
+
+# Modelo 2 con datos de entrenamiento
+badPredTrain2 <- evalModel(model2,trainingData2D,trainLabels,trainY)
+
+# Modelo 1 con datos de prueba
+badPredTest1 <- evalModel(model1,testingData,testLabels,testY)
+
+# Modelo 2 con datos de entrenamiento
+badPredTest2 <- evalModel(model2,testingData2D,testLabels,testY)
+
+# Ver primera prediccion errada del modelo 2 con datos de prueba
+inspectBadPred(badPredTest2,testingData,1)
+
+# Ver segunda prediccion errada del modelo 1 con datos de entrenamiento
+inspectBadPred(badPredTrain1,trainingData,2)

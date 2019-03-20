@@ -122,7 +122,7 @@ badPredTrain2 <- evalModel(model2,trainingData2D,trainLabels,trainY)
 # Modelo 1 con datos de prueba
 badPredTest1 <- evalModel(model1,testingData,testLabels,testY)
 
-# Modelo 2 con datos de entrenamiento
+# Modelo 2 con datos de prueba
 badPredTest2 <- evalModel(model2,testingData2D,testLabels,testY)
 
 # Ver primera prediccion errada del modelo 2 con datos de prueba
